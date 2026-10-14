@@ -1,0 +1,102 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+parameters:
+    youtube_api_key:      '%env(YOUTUBE_API_KEY)%'
+    devto_api_key:        '%env(DEVTO_API_KEY)%'
+    spoonacular_api_key:  '%env(SPOONACULAR_API_KEY)%'
+    anthropic_api_key:    '%env(default::ANTHROPIC_API_KEY)%'
+    upload_dir:           '%kernel.project_dir%/public/uploads/avatars'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+
+    App\Service\Aggregator\YouTubeAggregator:
+        arguments:
+            $apiKey: '%youtube_api_key%'
+
+    App\Service\Aggregator\DevToAggregator:
+        arguments:
+            $apiKey: '%devto_api_key%'
+
+    App\Service\YouTubeFetcher:
+        arguments:
+            $apiKey: '%youtube_api_key%'
+
+    App\Service\DevToFetcher:
+        arguments:
+            $apiKey: '%devto_api_key%'
+
+    App\Controller\DevToProxyController:
+        arguments:
+            $apiKey: '%devto_api_key%'
+        tags: ['controller.service_arguments']
+
+    App\State\TutorialCreateProcessor:
+        arguments:
+            $inner: '@api_platform.doctrine.orm.state.persist_processor'
+        tags:
+            - { name: 'api_platform.state_processor' }
+
+    App\State\CommentCreateProcessor:
+        arguments:
+            $inner: '@api_platform.doctrine.orm.state.persist_processor'
+        tags:
+            - { name: 'api_platform.state_processor' }
+
+    App\Service\SpoonacularFetcher:
+        arguments:
+            $apiKey: '%spoonacular_api_key%'
+
+    App\Controller\RecipeProxyController:
+        arguments:
+            $spoonacularApiKey: '%spoonacular_api_key%'
+        tags: ['controller.service_arguments']
+
+    App\Controller\ProfilePictureController:
+        arguments:
+            $uploadDir: '%upload_dir%'
+        tags: ['controller.service_arguments']
+
+    App\Service\Aggregator\ClaudeGeneratorAggregator:
+        arguments:
+            $anthropicApiKey: '%anthropic_api_key%'
+
+    App\Service\RecommendationService:
+        arguments:
+            $anthropicApiKey: '%anthropic_api_key%'
+
+    App\Controller\RecommendationController:
+        tags: ['controller.service_arguments']
+
+    App\Controller\YouTubeInfoController:
+        arguments:
+            $apiKey: '%youtube_api_key%'
+        tags: ['controller.service_arguments']
+
+    App\Controller\OAuthController:
+        arguments:
+            $frontendUrl: '%env(default::FRONTEND_URL)%'
+        tags: ['controller.service_arguments']
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        arguments:
+            - !service { class: PDO, factory: ['@database_connection', getNativeConnection] }
+            - { db_table: sessions, lock_mode: 1 }
+
+    App\Seo\SeoMetadataFactory:
+        arguments:
+            $siteUrl: '%env(SITE_URL)%'
+
+    App\Seo\HeadRenderer:
+        arguments:
+            $shellPath: '%kernel.project_dir%/public/index.html'
+
+    App\Service\Summary\AiSummaryClient:
+        arguments:
+            $apiKey: '%anthropic_api_key%'
+            $enabled: '%env(bool:default::SUMMARY_AI_ENABLED)%'

@@ -1,0 +1,202 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block main %}
+<style>
+  .yt-dash { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 0 0 40px; }
+
+  /* Grid stat cards */
+  .yt-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .yt-card {
+    background: #fff; border: 1px solid #e4e4e7; border-radius: 14px;
+    padding: 20px 22px; display: flex; flex-direction: column; gap: 6px;
+    transition: box-shadow .2s;
+  }
+  .yt-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+  .yt-card-icon { font-size: 22px; margin-bottom: 2px; }
+  .yt-card-value { font-size: 28px; font-weight: 800; color: #09090b; line-height: 1; }
+  .yt-card-label { font-size: 12px; color: #71717a; font-weight: 500; }
+  .yt-card-sub { font-size: 11px; color: #a1a1aa; margin-top: 4px; }
+  .yt-card-sub b { color: #16a34a; }
+  .yt-card.accent-violet { border-top: 3px solid #7c3aed; }
+  .yt-card.accent-blue   { border-top: 3px solid #0284c7; }
+  .yt-card.accent-green  { border-top: 3px solid #16a34a; }
+  .yt-card.accent-amber  { border-top: 3px solid #d97706; }
+  .yt-card.accent-pink   { border-top: 3px solid #db2777; }
+  .yt-card.accent-zinc   { border-top: 3px solid #71717a; }
+  .yt-card.accent-rose   { border-top: 3px solid #e11d48; }
+
+  /* Two-col layout */
+  .yt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  @media(max-width: 768px) { .yt-row { grid-template-columns: 1fr; } }
+
+  /* Panels */
+  .yt-panel {
+    background: #fff; border: 1px solid #e4e4e7; border-radius: 14px; overflow: hidden;
+  }
+  .yt-panel-head {
+    padding: 14px 20px; border-bottom: 1px solid #f4f4f5;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .yt-panel-head h3 { font-size: 13px; font-weight: 700; color: #09090b; margin: 0; }
+  .yt-panel-head a { font-size: 11px; color: #7c3aed; text-decoration: none; font-weight: 600; }
+  .yt-panel-head a:hover { text-decoration: underline; }
+  .yt-panel-body { padding: 0; }
+
+  /* Table */
+  .yt-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .yt-table thead th { padding: 9px 16px; text-align: left; font-size: 11px; color: #71717a; font-weight: 600; border-bottom: 1px solid #f4f4f5; text-transform: uppercase; letter-spacing: .05em; }
+  .yt-table tbody td { padding: 10px 16px; color: #3f3f46; border-bottom: 1px solid #fafafa; vertical-align: middle; }
+  .yt-table tbody tr:last-child td { border-bottom: none; }
+  .yt-table tbody tr:hover td { background: #fafafa; }
+
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+  .badge-community { background: #f0fdf4; color: #16a34a; }
+  .badge-generated { background: #f5f3ff; color: #7c3aed; }
+  .badge-recipe    { background: #fffbeb; color: #d97706; }
+  .badge-youtube   { background: #fef2f2; color: #dc2626; }
+  .badge-devto     { background: #f5f3ff; color: #6d28d9; }
+  .badge-default   { background: #f4f4f5; color: #71717a; }
+
+  /* Source bar */
+  .yt-sources { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .yt-source-row { display: flex; align-items: center; gap: 10px; }
+  .yt-source-name { width: 110px; font-size: 12px; color: #3f3f46; font-weight: 500; flex-shrink: 0; }
+  .yt-source-bar-wrap { flex: 1; background: #f4f4f5; border-radius: 4px; height: 8px; overflow: hidden; }
+  .yt-source-bar { height: 100%; border-radius: 4px; background: #7c3aed; transition: width .6s ease; }
+  .yt-source-count { width: 32px; text-align: right; font-size: 12px; font-weight: 700; color: #09090b; }
+
+  /* Activity badge */
+  .yt-new { display: inline-flex; align-items: center; gap: 4px; background: #f0fdf4; color: #16a34a; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; }
+
+  .section-title { font-size: 11px; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: .08em; margin: 28px 0 12px; }
+
+  .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; display: block; }
+</style>
+
+<div class="yt-dash">
+
+  {# ── KPI cards ── #}
+  <p class="section-title">Vue d'ensemble</p>
+  <div class="yt-cards">
+    <a href="{{ urlTutorials }}" style="text-decoration:none">
+      <div class="yt-card accent-violet">
+        <div class="yt-card-icon">📚</div>
+        <div class="yt-card-value">{{ stats.tutorials }}</div>
+        <div class="yt-card-label">Tutoriels</div>
+        <div class="yt-card-sub"><b>+{{ newTutorials }}</b> cette semaine</div>
+      </div>
+    </a>
+    <div class="yt-card accent-green">
+      <div class="yt-card-icon">✅</div>
+      <div class="yt-card-value">{{ stats.published }}</div>
+      <div class="yt-card-label">Publiés</div>
+      <div class="yt-card-sub">{{ stats.tutorials - stats.published }} brouillons</div>
+    </div>
+    <a href="{{ urlUsers }}" style="text-decoration:none">
+      <div class="yt-card accent-blue">
+        <div class="yt-card-icon">👥</div>
+        <div class="yt-card-value">{{ stats.users }}</div>
+        <div class="yt-card-label">Utilisateurs</div>
+        <div class="yt-card-sub"><b>+{{ newUsers }}</b> cette semaine</div>
+      </div>
+    </a>
+    <a href="{{ urlComments }}" style="text-decoration:none">
+      <div class="yt-card accent-amber">
+        <div class="yt-card-icon">💬</div>
+        <div class="yt-card-value">{{ stats.comments }}</div>
+        <div class="yt-card-label">Commentaires</div>
+      </div>
+    </a>
+    <div class="yt-card accent-pink">
+      <div class="yt-card-icon">⭐</div>
+      <div class="yt-card-value">{{ stats.avgRating }}</div>
+      <div class="yt-card-label">Note moyenne</div>
+      <div class="yt-card-sub">{{ stats.ratings }} notes</div>
+    </div>
+    <div class="yt-card accent-rose">
+      <div class="yt-card-icon">👁</div>
+      <div class="yt-card-value">{{ stats.views > 1000 ? (stats.views / 1000)|round(1) ~ 'k' : stats.views }}</div>
+      <div class="yt-card-label">Vues totales</div>
+    </div>
+  </div>
+
+  {# ── Two-col ── #}
+  <div class="yt-row">
+
+    {# Top tutoriels #}
+    <div class="yt-panel">
+      <div class="yt-panel-head">
+        <h3>🔥 Top tutoriels par vues</h3>
+        <a href="{{ urlTutorials }}">Voir tout →</a>
+      </div>
+      <div class="yt-panel-body">
+        <table class="yt-table">
+          <thead><tr><th>Titre</th><th>Source</th><th>Vues</th></tr></thead>
+          <tbody>
+            {% for t in topTutorials %}
+            <tr>
+              <td><span class="truncate" title="{{ t.title }}">{{ t.title }}</span></td>
+              <td>
+                <span class="badge badge-{{ t.source in ['community','generated','recipe','youtube','devto'] ? t.source : 'default' }}">
+                  {{ t.source }}
+                </span>
+              </td>
+              <td><b>{{ t.view_count > 1000 ? (t.view_count / 1000)|round(1) ~ 'k' : t.view_count }}</b></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {# Sources #}
+    <div class="yt-panel">
+      <div class="yt-panel-head">
+        <h3>📊 Tutoriels par source</h3>
+      </div>
+      <div class="yt-sources">
+        {% set total = stats.tutorials > 0 ? stats.tutorials : 1 %}
+        {% for source, count in bySource %}
+        <div class="yt-source-row">
+          <span class="yt-source-name">{{ source }}</span>
+          <div class="yt-source-bar-wrap">
+            <div class="yt-source-bar" style="width: {{ (count / total * 100)|round }}%"></div>
+          </div>
+          <span class="yt-source-count">{{ count }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  {# ── Recent comments ── #}
+  <div class="yt-panel">
+    <div class="yt-panel-head">
+      <h3>💬 Derniers commentaires</h3>
+      <a href="{{ urlComments }}">Modérer →</a>
+    </div>
+    <div class="yt-panel-body">
+      <table class="yt-table">
+        <thead><tr><th>Auteur</th><th>Tutoriel</th><th>Commentaire</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for c in recentComments %}
+          <tr>
+            <td><b>@{{ c.username }}</b></td>
+            <td><span class="truncate" title="{{ c.tutorial_title }}">{{ c.tutorial_title }}</span></td>
+            <td><span class="truncate" title="{{ c.content }}">{{ c.content|slice(0, 80) }}{% if c.content|length > 80 %}…{% endif %}</span></td>
+            <td style="white-space:nowrap; color:#a1a1aa; font-size:12px">
+              {{ c.created_at|date('d/m/y H:i') }}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" style="text-align:center; color:#a1a1aa; padding:20px">Aucun commentaire</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock main %}

@@ -1,0 +1,39 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+.claude/
+CLAUDE.md
+
+###> local env & secrets ###
+.env
+.env.*
+!.env.example
+!.env.test
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+###< local env & secrets ###
+
+###> editors / build output ###
+.idea/
+node_modules/
+dist/
+/public/assets/
+/public/uploads/
+###< editors / build output ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###

@@ -1,0 +1,26 @@
+framework:
+    rate_limiter:
+        # 5 tentatives de login par minute par IP
+        login:
+            policy: fixed_window
+            limit: 5
+            interval: '1 minute'
+
+        # 3 inscriptions par heure par IP
+        register:
+            policy: fixed_window
+            limit: 3
+            interval: '1 hour'
+
+        # 10 recherches live par minute par IP (protège le quota YouTube)
+        live_search:
+            policy: fixed_window
+            limit: 10
+            interval: '1 minute'
+
+when@test:
+    framework:
+        rate_limiter:
+            login:    { policy: no_limit }
+            register: { policy: no_limit }
+            live_search: { policy: no_limit }

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — YourTuto</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f0f10;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: #1a1a1d;
+            border: 1px solid #2a2a2d;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .logo h1 { color: #fff; font-size: 22px; font-weight: 700; }
+        .logo span { color: #7c3aed; }
+        .logo p { color: #71717a; font-size: 13px; margin-top: 4px; }
+        .field { margin-bottom: 16px; }
+        label { display: block; font-size: 13px; color: #a1a1aa; margin-bottom: 6px; }
+        input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0f0f10;
+            border: 1px solid #2a2a2d;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color .2s;
+        }
+        input:focus { border-color: #7c3aed; }
+        .error {
+            background: #450a0a;
+            border: 1px solid #7f1d1d;
+            color: #fca5a5;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 11px;
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        button:hover { background: #6d28d9; }
+        .back { text-align: center; margin-top: 20px; }
+        .back a { color: #71717a; font-size: 13px; text-decoration: none; }
+        .back a:hover { color: #a1a1aa; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">
+            <h1>Your<span>Tuto</span></h1>
+            <p>Accès administration</p>
+        </div>
+
+        {% if error %}
+            <div class="error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <form method="post" action="{{ path('admin_login') }}">
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ last_username }}" autofocus autocomplete="email">
+            </div>
+            <div class="field">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" autocomplete="current-password">
+            </div>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            <button type="submit">Se connecter</button>
+        </form>
+
+        <div class="back">
+            <a href="/">← Retour au site</a>
+        </div>
+    </div>
+</body>
+</html>

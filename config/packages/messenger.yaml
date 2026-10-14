@@ -1,0 +1,16 @@
+framework:
+    messenger:
+        failure_transport: failed
+
+        transports:
+            async:  '%env(MESSENGER_TRANSPORT_DSN)%'
+            failed: 'doctrine://default?queue_name=failed'
+
+        routing:
+            App\Message\AggregateExternalTutorials: async
+
+when@dev:
+    framework:
+        messenger:
+            transports:
+                async: 'sync://'
