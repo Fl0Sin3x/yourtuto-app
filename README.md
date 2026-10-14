@@ -22,8 +22,7 @@
 
 Learning content is scattered across YouTube, Dev.to, Reddit, blogs and recipe sites. **YourTuto** brings it together in a single, clean feed. You can search it in real time, save favorites, track your progress and rate what you follow. It also has community-written tutorials and an admin dashboard to keep everything curated.
 
-<!-- TODO: add a live demo link here once deployed -->
-> **Live demo:** _coming soon_
+> **Live demo:** [yourtuto-preprod.up.railway.app](https://yourtuto-preprod.up.railway.app)
 
 ## Screenshots
 
